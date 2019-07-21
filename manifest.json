@@ -4,7 +4,10 @@
     "description": "a stock market price alert extension",
     "permissions": [
         "management", 
-        "storage"
+        "storage",
+        "activeTab",
+        "https://cloud.iexapis.com/",
+        "https://sandbox.iexapis.com/"
     ],
     "background": {
         "scripts": [
