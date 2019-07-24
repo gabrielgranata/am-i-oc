@@ -21,6 +21,12 @@ function retrieveData() {
     });
 }
 
+function stockList() {
+    chrome.storage.stock_list.forEach(function(element) {
+    console.log(element);
+});
+}
+
 function makeStockDataRequest() {
     const stockRequest = new XMLHttpRequest();
     stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/GOOGL/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
