@@ -11,7 +11,6 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 retriveData();
-
 function retriveData() {
 
     chrome.storage.sync.get(['enabled'], function (items) {
@@ -32,3 +31,10 @@ function makeStockDataRequest() {
     }
     stockRequest.send()
 }
+
+chrome.notifications.create('', {
+    type: "basic",
+    iconUrl: "public/images/logo128.png",
+    title: "test notification",
+    message: "testing message"
+});
