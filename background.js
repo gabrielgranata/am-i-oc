@@ -10,30 +10,26 @@ chrome.runtime.onInstalled.addListener(function () {
     })
 });
 
-retrieveData();
-
-function retrieveData() {
-
+function checkEnabled() {
     chrome.storage.sync.get(['enabled'], function (items) {
         if (items.enabled) {
-            makeStockDataRequest();
+            stockList();
         }
     });
 }
 
 function stockList() {
-    chrome.storage.stock_list.forEach(function(element) {
-    console.log(element);
+    chrome.storage.sync.get.tickers.forEach(function(element) {
+    makeStockDataRequest();
 });
 }
 
-function makeStockDataRequest() {
+function makeStockDataRequest(stock_name) {
     const stockRequest = new XMLHttpRequest();
-    stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/GOOGL/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
+    stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/'+stock_name+'/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
     stockRequest.onreadystatechange = () => {
         if (stockRequest.readyState === 4) {
             let data = JSON.parse(stockRequest.responseText);
-            console.log(data);
         }
     }
     stockRequest.send()
