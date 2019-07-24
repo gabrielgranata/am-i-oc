@@ -22,9 +22,9 @@ function retrieveData() {
 }
 
 function stockList() {
-    chrome.storage.stock_list.forEach(function(element) {
-    console.log(element);
-});
+    chrome.storage.stock_list.forEach(function (element) {
+        console.log(element);
+    });
 }
 
 function makeStockDataRequest() {
