@@ -10,8 +10,9 @@ chrome.runtime.onInstalled.addListener(function () {
     })
 });
 
-retriveData();
-function retriveData() {
+retrieveData();
+
+function retrieveData() {
 
     chrome.storage.sync.get(['enabled'], function (items) {
         if (items.enabled) {
