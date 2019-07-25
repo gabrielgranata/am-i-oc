@@ -1,3 +1,7 @@
+html{
+	height: 100%;
+}
+
 h1 {
 	background: #2980B9;
 	color: white;
@@ -43,9 +47,9 @@ li:hover span {
 }
 
 body {
-	background: #4ECDC4;  /* fallback for old browsers */
-	background: -webkit-linear-gradient(to right, #556270, #4ECDC4);  /* Chrome 10-25, Safari 5.1-6 */
-	background: linear-gradient(to right, #556270, #4ECDC4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	background: rgb(14,0,75);
+	background: linear-gradient(90deg, rgba(14,0,75,1) 41%, rgba(255,255,255,1) 100%);
+	background-repeat: no-repeat;
 }
 
 input {
