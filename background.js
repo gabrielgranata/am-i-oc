@@ -10,18 +10,16 @@ chrome.runtime.onInstalled.addListener(function () {
     })
 });
 
-function checkEnabled() {
-    chrome.storage.sync.get(['enabled'], function (items) {
-        if (items.enabled) {
-            stockList();
+function addPrice() {
+    chrome.storage.sync.get(['tickers'], function(items) {
+    let tickers = items.tickers
+    let list = [];
+        tickers.forEach(function(element) {
+            element.price = makeStockDataRequest(element)
+            list.push(element);
         }
     });
-}
-
-function stockList() {
-    chrome.storage.sync.get.tickers.forEach(function(element) {
-    makeStockDataRequest();
-});
+    return list
 }
 
 function makeStockDataRequest(stock_name) {
@@ -30,9 +28,35 @@ function makeStockDataRequest(stock_name) {
     stockRequest.onreadystatechange = () => {
         if (stockRequest.readyState === 4) {
             let data = JSON.parse(stockRequest.responseText);
+	    return data.latestPrice
         }
     }
     stockRequest.send()
+}
+
+function priceHigh(list) {
+    list.forEach(function(element) {
+        if (element.price > element.high) {
+           showNotification(1, element.name);
+        }
+    });
+}
+
+function priceLow(list) {
+    list.forEach(function(element) {
+        if (element.price < element.low) {
+           showNotification(2, element.name);
+        }
+    });
+}
+
+function showNotification(num, ticker) {
+    if (num == 1) {
+        serviceWorkerRegistration.showNotification("${ticker} has reached your high price", {"body":"${ticker} is priced at ${num}"})
+    }
+    if (num == 2) {
+        serviceWorkerRegistration.showNotification("${ticker} has reached your low price", {"body":"${ticker} is priced at ${num}"})
+    }
 }
 
 chrome.notifications.create('', {
