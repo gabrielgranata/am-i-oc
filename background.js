@@ -54,11 +54,27 @@ function priceLow(list) {
 }
 
 function showNotification(num, ticker) {
+    let stockIcon = 'empty'
+    let priceLevel = 'empty'
     if (num == 1) {
-        serviceWorkerRegistration.showNotification("${ticker} has reached your high price", { "body": "${ticker} is priced at ${num}" })
+        priceLevel = 'high'
+        stockIcon = 'public/images/upward.png'
     }
     if (num == 2) {
-        serviceWorkerRegistration.showNotification("${ticker} has reached your low price", { "body": "${ticker} is priced at ${num}" })
+        priceLevel = 'low'
+        stockIcon = 'public/images/downward.png'
+    }
+    var options = {
+    type: 'basic',
+    title: ticker + ' has reached your set ' + priceLevel + ' of ' + num,
+    message: 'happy trading',
+    iconUrl: stockIcon
+    };
+
+    chrome.notifications.create(options, callback)
+
+    function callback() {
+        console.log('Popup done!');
     }
 }
 
