@@ -10,25 +10,22 @@ chrome.runtime.onInstalled.addListener(function () {
     })
 });
 
-function addPrice() {
+function getPrices() {
     chrome.storage.sync.get(['tickers'], function(items) {
     let tickers = items.tickers
-    let list = [];
         tickers.forEach(function(element) {
             element.price = makeStockDataRequest(element)
-            list.push(element);
+            chrome.storage.sync.set {
+            tickers:tickers
+            }
         }
     });
-<<<<<<< HEAD
-    return list
-=======
 }
 
 function stockList() {
     chrome.storage.sync.get.tickers.forEach(function (element) {
         makeStockDataRequest();
     });
->>>>>>> 5bab24ea0bca3479b1e1fa9c3ab4bdd9bb0d53e1
 }
 
 function makeStockDataRequest(stock_name) {
