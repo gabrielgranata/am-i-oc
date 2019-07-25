@@ -19,12 +19,21 @@ function addPrice() {
             list.push(element);
         }
     });
+<<<<<<< HEAD
     return list
+=======
+}
+
+function stockList() {
+    chrome.storage.sync.get.tickers.forEach(function (element) {
+        makeStockDataRequest();
+    });
+>>>>>>> 5bab24ea0bca3479b1e1fa9c3ab4bdd9bb0d53e1
 }
 
 function makeStockDataRequest(stock_name) {
     const stockRequest = new XMLHttpRequest();
-    stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/'+stock_name+'/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
+    stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/' + stock_name + '/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
     stockRequest.onreadystatechange = () => {
         if (stockRequest.readyState === 4) {
             let data = JSON.parse(stockRequest.responseText);
