@@ -2,15 +2,29 @@ chrome.storage.sync.get(['tickers'], function(items) {
     const tickers = items.tickers;
 
     tickers.forEach(function(ticker) {
-        $('ul').append(`<li class='pl-3'>${ticker}</li>`)
+        $('ul').append(`<li class='align-items-center'><span id='delete' class='ml-0'>a</span>${ticker}</li>`)
     })
 })
 
 $('ul').on('click', 'span', function (event) {
+    let targetTicker = $(this).parent().text().slice(1);
+    
+    chrome.storage.sync.get(['tickers'], function(items) {
+
+        const tickers = items.tickers;
+
+        const index = tickers.indexOf(targetTicker);
+        tickers.splice(index, 1);
+        
+        chrome.storage.sync.set({tickers: tickers});
+
+    })
+
     $(this).parent().fadeOut(500, function () {
         $(this).remove();
     });
     event.stopPropagation();
+
 });
 
 $("input[type='text']").keypress(async function (event) {
@@ -34,7 +48,6 @@ function addTicker(ticker) {
             if (stockRequest.status === 200) {
                 chrome.storage.sync.get(['tickers'], function(items) {
                     const tickers = items.tickers;
-                    console.log(tickers);
                     if (tickers.includes(ticker)) {
                         alert('Ticker already tracked! Please try again.');
                         return;
@@ -43,10 +56,10 @@ function addTicker(ticker) {
                         tickers.push(ticker);
                         chrome.storage.sync.set({ tickers: tickers });
                     }
-                })
+                });
                 chrome.storage.sync.get(['tickers'], function(items) {
                     console.log(items);
-                })
+                });
             } else {
                 alert('Not a valid ticker! Please try again.');
             }
