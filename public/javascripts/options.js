@@ -6,8 +6,8 @@ chrome.storage.sync.get(['stocks'], function (items) {
             $('ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(stock.ticker).toUpperCase()}
-                                <input class='low' type='number'>
                                 <input class='high' type='number'>
+                                <input class='low' type='number'>
                             </li>`);
             
             
@@ -97,8 +97,8 @@ function addTicker(ticker) {
                         $('ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(ticker).toUpperCase()}
-                                <input class='low' type='number' placeholder='low'>
-                                <input class='high' type='number' placeholder='high'>
+                                <input class='high' type='text' placeholder='high'>
+                                <input class='low' type='text' placeholder='low'>
                             </li>`);
                         let newStock = {
                             ticker: ticker
