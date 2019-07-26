@@ -6,9 +6,14 @@ chrome.storage.sync.get(['stocks'], function (items) {
             $('ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(stock.ticker).toUpperCase()}
-                                <input id='low' type='text'>
-                                <input id='high' type='text'>
+                                <input class='low' type='number'>
+                                <input class='high' type='number'>
                             </li>`);
+            
+            
+            addHighInputKeypressListener();
+            addLowInputKeypressListener();
+
         })
     }
 })
@@ -47,16 +52,22 @@ $('ul').on('click', 'span', function (event) {
 $("#newTicker").keypress(async function (event) {
 
     if (event.which === 13) {
-        const ticker = $(this).val();
-        console.log(ticker);
+        let ticker = $(this).val();
+        ticker = ticker.replace(/ /g, '').toUpperCase();
         addTicker(ticker);
     }
 
 });
 
-$('li').on('keypress', 'input', function (event) {
-    console.log(event);
-})
+function addLowInputKeypressListener() {
+    let lowInput = $('li').last().children().eq(1);
+
+    lowInput.keypress('keypress', async function (event) {
+        if (event.which === 13) {
+            changeNotificationPrice(lowInput);
+        }
+    })
+}
 
 function addTicker(ticker) {
 
@@ -86,12 +97,16 @@ function addTicker(ticker) {
                         $('ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(ticker).toUpperCase()}
-                                <input class='low' type='text' placeholder='low'>
-                                <input class='low' type='text'>
+                                <input class='low' type='number' placeholder='low'>
+                                <input class='high' type='number' placeholder='high'>
                             </li>`);
                         let newStock = {
                             ticker: ticker
                         }
+
+                        addLowInputKeypressListener();
+                        addHighInputKeypressListener();
+
                         chrome.storage.sync.get(['stocks'], function (items) {
                             let stocks = items.stocks;
                             stocks.push(newStock);
@@ -107,4 +122,40 @@ function addTicker(ticker) {
     }
 
     stockRequest.send();
+}
+
+function addHighInputKeypressListener() {
+    let highInput = $('li').last().children().eq(2);
+    
+    highInput.keypress(async function (event) {
+        if (event.which === 13) {
+            changeNotificationPrice(highInput);
+        }
+    })
+}
+
+function changeNotificationPrice(input) {
+
+    const tickerText = input.parent().text();
+    const expr = /([A-Z])\w+/g
+
+    const ticker = tickerText.match(expr)[0];
+
+    chrome.storage.sync.get(['stocks'], function(items) {
+        const stocks = items.stocks;
+        let targetIndex = 0;
+        stocks.forEach(function (stock, index) {
+            if (stock.ticker === ticker) {
+                targetIndex = index;
+            }
+        });
+
+        if (input.hasClass('low')) {
+            stocks[targetIndex].low = input.val();
+        } else if (input.hasClass('high')) {
+            stocks[targetIndex].high = input.val();
+        }
+
+        chrome.storage.sync.set({ stocks: stocks });
+    })
 }
