@@ -55,7 +55,7 @@ function priceLow(list) {
 
 function showNotification(num, ticker) {
     if (num == 1) {
-        serviceWorkerRegistration.showNotification("${ticker} has reached your high price", { "body": "${ticker} is priced at ${num}" })
+        serviceWorkerRegistration.showNotification(`${ticker} has reached your high price`, { "body": `${ticker} is priced at ${num}` })
     }
     if (num == 2) {
         serviceWorkerRegistration.showNotification("${ticker} has reached your low price", { "body": "${ticker} is priced at ${num}" })
