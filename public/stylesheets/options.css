@@ -79,3 +79,13 @@ body {
 	color: grey;
 	text-decoration: line-through;
 }
+
+.low {
+	width: 110px;
+	height: 40px;
+}
+
+.high {
+	width: 110px;
+	height: 40px;
+}
