@@ -1,7 +1,20 @@
 'use strict';
-setInterval(function() {
-    chrome.storage.sync.get(['stocks'], function(items) {
-        console.log(items.stocks);
+setInterval(function () {
+    chrome.storage.sync.get(['stocks'], function (items) {
+        let stocks = items.stocks;
+        console.log(stocks);
+        stocks.forEach(async function (stock) {
+            let latestPrice = await makeStockDataRequest(stock.ticker);
+            console.log(latestPrice);
+            if (stock.high) {
+                await checkHigh(latestPrice, stock.high, stock.ticker);
+            } else if (stock.low) {
+                await checkLow(latestPrice, stock.low, stock.ticker);
+            }
+            stock.latestPrice = latestPrice;
+        });
+
+        chrome.storage.sync.set({stocks: stocks});
     })
 }, 5000);
 
@@ -10,9 +23,6 @@ chrome.runtime.onInstalled.addListener(function () {
         console.log('hello world!');
     });
 
-    chrome.browserAction.setPopup({ popup: 'popup.html' }, function () {
-        console.log('popup has been set up');
-    })
 });
 
 function getPrices() {
@@ -20,67 +30,67 @@ function getPrices() {
         let tickers = items.tickers
         tickers.forEach(function (element) {
             element.price = makeStockDataRequest(element.ticker);
-            chrome.storage.sync.set({tickers: tickers})
+            chrome.storage.sync.set({ tickers: tickers })
         });
     });
 }
 
-function makeStockDataRequest(stockName) {
+async function makeStockDataRequest(stockName) {
+    let latestPrice;
+    let done;
     const stockRequest = new XMLHttpRequest();
     stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/' + stockName + '/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df');
     stockRequest.onreadystatechange = () => {
         if (stockRequest.readyState === 4) {
             let data = JSON.parse(stockRequest.responseText);
-            return data.latestPrice
+            latestPrice = data.latestPrice;
+            done = true;
         }
     }
+
+    await setTimeout(function() {
+        console.log('hi');
+    }, 5000);
+
     stockRequest.send();
+
+    return latestPrice;
+
 }
 
-function priceHigh(list) {
-    list.forEach(function (element) {
-        if (element.price > element.high) {
-            showNotification(1, element.name);
-        }
-    });
-}
-
-function priceLow(list) {
-    list.forEach(function (element) {
-        if (element.price < element.low) {
-            showNotification(2, element.name);
-        }
-    });
-}
-
-function showNotification(num, ticker) {
-    let stockIcon = 'empty'
-    let priceLevel = 'empty'
-    if (num == 1) {
-        priceLevel = 'high'
-        stockIcon = 'public/images/upward.png'
+function checkHigh(latestPrice, setPrice, ticker) {
+    if (latestPrice >= setPrice) {
+        showNotification('high', ticker)
     }
-    if (num == 2) {
-        priceLevel = 'low'
+}
+
+function checkLow(latestPrice, setPrice, ticker) {
+
+    if (latestPrice <= setPrice) {
+        showNotification('low', ticker);
+    }
+
+}
+
+function showNotification(priceLevel, ticker) {
+
+    let stockIcon = 'empty'
+    if (priceLevel === 'high') {
+        stockIcon = 'public/images/upward.png'
+    } else if (priceLevel === 'low') {
         stockIcon = 'public/images/downward.png'
     }
+
     var options = {
-    type: 'basic',
-    title: ticker + ' has reached your set ' + priceLevel + ' of ' + num,
-    message: 'happy trading',
-    iconUrl: stockIcon
+        type: 'basic',
+        title: `${ticker} has reached your set ${priceLevel} of ${num}`,
+        message: 'happy trading',
+        iconUrl: stockIcon
     };
 
     chrome.notifications.create(options, callback)
 
     function callback() {
-        console.log('Popup done!');
+        console.log('Notification done!');
     }
 }
-
-chrome.notifications.create('', {
-    type: "basic",
-    iconUrl: "public/images/logo128.png",
-    title: "test notification",
-    message: "testing message"
-});
