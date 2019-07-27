@@ -1,10 +1,25 @@
 'use strict';
-setInterval(function () {
+
+setInterval(checkTime, 300000);
+
+function checkTime() {
+    let today = new Date();
+    let hours = today.getUTCHours() - 4;
+    let minutes = today.getUTCMinutes();
+    
+    if ((hours === 9 && minutes >= 30) || (hours >= 10 && hours <= 16)) {
+        console.log('Time is ok');
+        setInterval(checkStocks, 60000);
+    }
+}
+
+function checkStocks() {
     chrome.storage.sync.get(['stocks'], function (items) {
         let stocks = items.stocks;
         console.log(stocks);
         stocks.forEach(async function (stock) {
             let stockRequest = await retriveStockData(stock.ticker);
+            console.log(stockRequest);
             let data = JSON.parse(stockRequest.responseText);
             let latestPrice = data.latestPrice;
             console.log(latestPrice);
@@ -19,47 +34,38 @@ setInterval(function () {
 
         chrome.storage.sync.set({stocks: stocks});
     })
-}, 5000);
+}
 
 chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ stocks: [] }, function () {
-        console.log('hello world!');
+        checkTime();
     });
-
 });
 
 async function retriveStockData(stockName) {
 
     const stockRequest = new XMLHttpRequest();
     stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/' + stockName + '/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df', false);
-    stockRequest.onreadystatechange = () => {
-        if (stockRequest.readyState === 4) {
-            let data = JSON.parse(stockRequest.responseText);
-            latestPrice = data.latestPrice;
-            done = true;
-        }
-    }
     stockRequest.send();
     return stockRequest;
     
-
 }
 
 function checkHigh(latestPrice, setPrice, ticker) {
     if (latestPrice >= setPrice) {
-        showNotification('high', ticker)
+        showNotification('high', ticker, setPrice)
     }
 }
 
 function checkLow(latestPrice, setPrice, ticker) {
 
     if (latestPrice <= setPrice) {
-        showNotification('low', ticker);
+        showNotification('low', ticker, setPrice);
     }
 
 }
 
-function showNotification(priceLevel, ticker) {
+function showNotification(priceLevel, ticker, setPrice) {
 
     let stockIcon = 'empty'
     if (priceLevel === 'high') {
@@ -70,7 +76,7 @@ function showNotification(priceLevel, ticker) {
 
     var options = {
         type: 'basic',
-        title: `${ticker} has reached your set ${priceLevel} of ${num}`,
+        title: `${ticker} has reached your set ${priceLevel} of ${setPrice}`,
         message: 'happy trading',
         iconUrl: stockIcon
     };
