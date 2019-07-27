@@ -152,8 +152,10 @@ function changeNotificationPrice(input) {
 
         if (input.hasClass('low')) {
             stocks[targetIndex].low = input.val();
+            alert(`Low target price set to ${input.val()}`)
         } else if (input.hasClass('high')) {
             stocks[targetIndex].high = input.val();
+            alert(`High target price set to ${input.val()}`)
         }
 
         chrome.storage.sync.set({ stocks: stocks });

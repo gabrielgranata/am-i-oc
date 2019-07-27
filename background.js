@@ -1,15 +1,15 @@
 'use strict';
 
-setInterval(checkTime, 300000);
+setInterval(checkTime, 60000);
 
 function checkTime() {
     let today = new Date();
     let hours = today.getUTCHours() - 4;
     let minutes = today.getUTCMinutes();
-    
-    if ((hours === 9 && minutes >= 30) || (hours >= 10 && hours <= 16)) {
-        console.log('Time is ok');
-        setInterval(checkStocks, 60000);
+    let day = today.getUTCDay();
+
+    if ((day != 0 && day != 6) && ((hours === 9 && minutes >= 30) || (hours >= 10 && hours <= 16))) {
+        checkStocks();
     }
 }
 
@@ -45,7 +45,7 @@ chrome.runtime.onInstalled.addListener(function () {
 async function retriveStockData(stockName) {
 
     const stockRequest = new XMLHttpRequest();
-    stockRequest.open('GET', 'https://sandbox.iexapis.com/stable/stock/' + stockName + '/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df', false);
+    stockRequest.open('GET', 'https://cloud.iexapis.com/stable/stock/' + stockName + '/quote?token=sk_a782c113953f4b6b8469903c93b1714f', false);
     stockRequest.send();
     return stockRequest;
     
