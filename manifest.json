@@ -1,7 +1,7 @@
 {
-    "name": "stonks",
+    "name": "Stockino",
     "version": "1.0",
-    "description": "a stock market price alert extension",
+    "description": "A stock price tracker with built-in browser notifications for your set prices.",
     "permissions": [
         "management", 
         "storage",
