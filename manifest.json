@@ -1,5 +1,5 @@
 {
-    "name": "Stockino",
+    "name": "Stock Clock",
     "version": "1.0",
     "description": "A stock price tracker with built-in browser notifications for your set prices.",
     "permissions": [
