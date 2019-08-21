@@ -75,6 +75,13 @@ body {
 	box-shadow: 0 0 3px rgb(0, 0, 0, 0.1);
 }
 
+#container2 {
+	width: 360px;
+	margin: 100px auto;
+	background: #F7F7F7;
+	box-shadow: 0 0 3px rgb(0, 0, 0, 0.1);
+}
+
 .completed {
 	color: grey;
 	text-decoration: line-through;
