@@ -20,17 +20,18 @@ chrome.storage.sync.get(['stocks'], function (items) {
 $('ul').on('click', 'span', function (event) {
 
     let targetTicker = $(this).parent().text().slice(1);
+    let targetTickerPrice;
 
     chrome.storage.sync.get(['stocks'], function (items) {
 
         const stocks = items.stocks;
-
 
         if (stocks) {
             let targetIndex = 0;
             stocks.forEach(function (stock, index) {
                 if (stock.ticker == targetTicker) {
                     targetIndex = index;
+                    targetTickerPrice = stock.latestPrice;
                 }
             });
 
@@ -40,6 +41,12 @@ $('ul').on('click', 'span', function (event) {
         }
 
     });
+
+    let currentPriceElements = $('.prices');
+
+    for (let element of currentPriceElements) {
+        console.log(element.textContent.replace(/ /g, ''));
+    }
 
     $(this).parent().fadeOut(500, function () {
         $(this).remove();
@@ -70,7 +77,7 @@ function addLowInputKeypressListener() {
 
 function addTicker(ticker) {
 
-    const requestUrl = `https://sandbox.iexapis.com/stable/stock/${ticker}/quote?token=Tpk_fb93bef773284e5c84796dafe7f621df`;
+    const requestUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=sk_a782c113953f4b6b8469903c93b1714f`;
     $('input').val('');
 
     const stockRequest = new XMLHttpRequest();
@@ -97,16 +104,19 @@ function addTicker(ticker) {
                         $('#container ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(ticker).toUpperCase()}
-                                <input class='low' type='text' placeholder='low' min='0'>
-                                <input class='high' type='text' placeholder='high' min='0'>
+                                <input class='low' type='number' placeholder='low' min='0'>
+                                <input class='high' type='number' placeholder='high' min='0'>
                             </li>`);
 
-                        $('#container2 ul').append(`<li class='align-items-center'>
+                        $('#container2 ul').append(`<li class='prices align-items-center'>
                                 ${response.latestPrice}
                             </li>`);
 
                         let newStock = {
-                            ticker: ticker
+                            ticker: ticker,
+                            latestPrice: response.latestPrice,
+                            low: 0,
+                            high: 0
                         }
 
                         addLowInputKeypressListener();
