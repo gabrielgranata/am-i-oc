@@ -3,14 +3,13 @@ chrome.storage.sync.get(['stocks'], function (items) {
 
     if (stocks.length > 0) {
         stocks.forEach(function (stock) {
-            $('ul').append(`<li class='align-items-center'>
+            $('#container ul').append(`<li class='align-items-center'>
                                 <span id='delete' class='ml-0'><img scr='../images/trashcan.png'></span>
                                     ${(stock.ticker).toUpperCase()}
                                 <input class='low' type='number' min='0' placeholder='${stock.low || 0}'>
                                 <input class='high' type='number' min='0' placeholder='${stock.high || 0}'>
                             </li>`);
-            
-            
+
             addHighInputKeypressListener();
             addLowInputKeypressListener();
 
@@ -81,6 +80,7 @@ function addTicker(ticker) {
             if (stockRequest.status === 200) {
                 chrome.storage.sync.get(['stocks'], function (items) {
 
+                    const response = JSON.parse(stockRequest.responseText)
                     const stocks = items.stocks;
                     let tracked = false;
 
@@ -99,7 +99,10 @@ function addTicker(ticker) {
                                     ${(ticker).toUpperCase()}
                                 <input class='low' type='text' placeholder='low' min='0'>
                                 <input class='high' type='text' placeholder='high' min='0'>
+                                    Current Price: ${response.latestPrice}  High: ${response.high}  Low: ${response.low}
                             </li>`);
+
+
                         let newStock = {
                             ticker: ticker
                         }
